@@ -19,29 +19,29 @@ _tmux_handle_resize() {
 	local width_threshold
 	width_threshold=$(_tmux_get_option "@status-width-threshold" "120")
 
-	# Get the compact status formats
+	# Get the compact status formats (optional)
 	local compact_left
-	compact_left=$(_tmux_get_option "@status-compact-left" "#S")
+	compact_left=$(_tmux_get_option "@status-compact-left" "")
 
 	local compact_right
-	compact_right=$(_tmux_get_option "@status-compact-right" "%H:%M")
+	compact_right=$(_tmux_get_option "@status-compact-right" "")
 
-	# Get the full status formats
+	# Get the full status formats (optional)
 	local full_left
-	full_left=$(_tmux_get_option "@status-full-left" "#S | #(whoami)@#H")
+	full_left=$(_tmux_get_option "@status-full-left" "")
 
 	local full_right
-	full_right=$(_tmux_get_option "@status-full-right" "%Y-%m-%d | %H:%M:%S")
+	full_right=$(_tmux_get_option "@status-full-right" "")
 
 	# Compare width against threshold and set status accordingly
 	if [ "$client_width" -lt "$width_threshold" ]; then
 		# Compact mode - narrow terminal
-		_tmux_set_option "status-left" "$compact_left"
-		_tmux_set_option "status-right" "$compact_right"
+		[ -n "$compact_left" ] && _tmux_set_option "status-left" "$compact_left"
+		[ -n "$compact_right" ] && _tmux_set_option "status-right" "$compact_right"
 	else
 		# Full mode - wide terminal
-		_tmux_set_option "status-left" "$full_left"
-		_tmux_set_option "status-right" "$full_right"
+		[ -n "$full_left" ] && _tmux_set_option "status-left" "$full_left"
+		[ -n "$full_right" ] && _tmux_set_option "status-right" "$full_right"
 	fi
 }
 

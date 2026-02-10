@@ -45,7 +45,7 @@ Then press `prefix + I` to install the plugin.
 
 ## Configuration
 
-All configuration options are set in your `~/.tmux.conf` file.
+All configuration options are optional and set in your `~/.tmux.conf` file.
 
 ### Width Threshold
 
@@ -60,33 +60,29 @@ Default: `120`
 
 ### Compact Mode (narrow terminals)
 
-Status formats when terminal width is below the threshold:
+Status formats when terminal width is below the threshold. **These are optional** - only set them if you want the plugin to manage your status bar in compact mode:
 
 ```tmux
 set -g @status-compact-left "#S"
 set -g @status-compact-right "%H:%M"
 ```
 
-Defaults:
-
-- Left: `#S` (session name)
-- Right: `%H:%M` (time in HH:MM format)
+If not set, the plugin will not modify the status bar in compact mode.
 
 ### Full Mode (wide terminals)
 
-Status formats when terminal width is at or above the threshold:
+Status formats when terminal width is at or above the threshold. **These are optional** - only set them if you want the plugin to manage your status bar in full mode:
 
 ```tmux
 set -g @status-full-left "#S | #(whoami)@#H"
 set -g @status-full-right "%Y-%m-%d | %H:%M:%S"
 ```
 
-Defaults:
+If not set, the plugin will not modify the status bar in full mode.
 
-- Left: `#S | #(whoami)@#H` (session | user@host)
-- Right: `%Y-%m-%d | %H:%M:%S` (date and time)
+## Example Configurations
 
-## Example Configuration
+### Full Configuration (both modes)
 
 ```tmux
 # Set width threshold to 100 characters
@@ -101,6 +97,26 @@ set -g @status-full-left "#S | #I:#P | #(whoami)@#H"
 set -g @status-full-right "#{battery_percentage} | %Y-%m-%d | %H:%M:%S"
 
 # Load the plugin
+set -g @plugin 'tmux-contrib/tmux-status'
+```
+
+### Partial Configuration (only compact mode)
+
+```tmux
+# Only simplify status bar when terminal is narrow
+set -g @status-compact-left "#S"
+set -g @status-compact-right "%H:%M"
+
+set -g @plugin 'tmux-contrib/tmux-status'
+```
+
+### Partial Configuration (only status-right)
+
+```tmux
+# Only modify the right side of status bar
+set -g @status-compact-right "%H:%M"
+set -g @status-full-right "%Y-%m-%d | %H:%M:%S"
+
 set -g @plugin 'tmux-contrib/tmux-status'
 ```
 
@@ -124,8 +140,11 @@ See `man tmux` for more format variables.
 1. The plugin sets up a tmux `client-resized` hook
 2. When the terminal is resized, the hook triggers the status handler script
 3. The script checks the current client width using `#{client_width}`
-4. Based on the width and configured threshold, it sets either compact or full status
-5. The status bar updates immediately
+4. Based on the width and configured threshold:
+   - If width < threshold and compact options are set, applies compact status
+   - If width >= threshold and full options are set, applies full status
+   - If options are not configured, leaves that part of the status bar unchanged
+5. The status bar updates immediately (only for configured options)
 
 ## License
 
