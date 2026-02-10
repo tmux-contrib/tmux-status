@@ -25,5 +25,5 @@ _tmux_set_option() {
 	local option="$1"
 	local value="$2"
 
-	tmux set-option -g "$option" "$value"
+	tmux set-option -gF "$option" "$value"
 }
