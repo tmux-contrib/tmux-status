@@ -1,10 +1,8 @@
 # tmux-status
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+> A tmux plugin that dynamically adjusts the status bar content based on terminal width. When your terminal is resized, the status bar automatically switches between compact and full formats.
 
-A tmux plugin that dynamically adjusts the status bar content based on terminal
-width. When your terminal is resized, the status bar automatically switches
-between compact and full formats.
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
 
