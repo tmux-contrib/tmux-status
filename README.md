@@ -2,7 +2,7 @@
 
 > A tmux plugin that dynamically adjusts the status bar content based on terminal width. When your terminal is resized, the status bar automatically switches between compact and full formats.
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![CI](https://github.com/tmux-contrib/tmux-status/actions/workflows/ci.yml/badge.svg)](https://github.com/tmux-contrib/tmux-status/actions/workflows/ci.yml) [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Features
 
