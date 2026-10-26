@@ -36,12 +36,12 @@ _tmux_handle_resize() {
 	# Compare width against threshold and set status accordingly
 	if [ "$client_width" -lt "$width_threshold" ]; then
 		# Compact mode - narrow terminal
-		[ -n "$compact_left" ] && _tmux_set_option "status-left" "$compact_left"
-		[ -n "$compact_right" ] && _tmux_set_option "status-right" "$compact_right"
+		if [ -n "$compact_left" ]; then _tmux_set_option "status-left" "$compact_left"; fi
+		if [ -n "$compact_right" ]; then _tmux_set_option "status-right" "$compact_right"; fi
 	else
 		# Full mode - wide terminal
-		[ -n "$full_left" ] && _tmux_set_option "status-left" "$full_left"
-		[ -n "$full_right" ] && _tmux_set_option "status-right" "$full_right"
+		if [ -n "$full_left" ]; then _tmux_set_option "status-left" "$full_left"; fi
+		if [ -n "$full_right" ]; then _tmux_set_option "status-right" "$full_right"; fi
 	fi
 }
 
