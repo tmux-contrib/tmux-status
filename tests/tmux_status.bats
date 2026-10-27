@@ -80,3 +80,15 @@ setup() {
 	[ "$(tmux show-option -gv status-left)" = "$left" ]
 	[ "$(tmux show-option -gv status-right)" = "$right" ]
 }
+
+@test "no client attached: exits cleanly, prints nothing, leaves status untouched" {
+	local left right
+	left="$(tmux show-option -gv status-left)"
+	right="$(tmux show-option -gv status-right)"
+
+	run_resize ""
+
+	[ -z "$output" ]
+	[ "$(tmux show-option -gv status-left)" = "$left" ]
+	[ "$(tmux show-option -gv status-right)" = "$right" ]
+}
