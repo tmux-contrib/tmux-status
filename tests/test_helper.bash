@@ -20,7 +20,7 @@ test_helper_setup() {
 	cat >"$BATS_TEST_TMPDIR/bin/tmux" <<SHIM
 #!/usr/bin/env bash
 if [ "\$1" = "display-message" ] && [ "\$3" = "#{client_width}" ]; then
-	echo "\${FAKE_CLIENT_WIDTH:-200}"
+	echo "\${FAKE_CLIENT_WIDTH-200}"
 	exit 0
 fi
 exec "$real_tmux" "\$@"
@@ -28,7 +28,7 @@ SHIM
 	chmod +x "$BATS_TEST_TMPDIR/bin/tmux"
 	export PATH="$BATS_TEST_TMPDIR/bin:$PATH"
 
-	tmux new-session -d -s test
+	tmux -f /dev/null new-session -d -s test
 }
 
 test_helper_teardown() {

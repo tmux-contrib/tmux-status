@@ -15,6 +15,12 @@ _tmux_handle_resize() {
 	local client_width
 	client_width=$(tmux display-message -p '#{client_width}')
 
+	# No client attached yet (e.g. plugin loaded from tmux.conf); the
+	# client-resized hook runs the handler again once one attaches
+	case "$client_width" in
+	'' | *[!0-9]*) return 0 ;;
+	esac
+
 	# Get the configured threshold (default: 120)
 	local width_threshold
 	width_threshold=$(_tmux_get_option "@status-width-threshold" "120")
