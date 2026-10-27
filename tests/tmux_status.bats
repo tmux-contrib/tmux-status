@@ -92,3 +92,52 @@ setup() {
 	[ "$(tmux show-option -gv status-left)" = "$left" ]
 	[ "$(tmux show-option -gv status-right)" = "$right" ]
 }
+
+@test "full mode applies the configured lengths" {
+	tmux set -g @status-full-left-length 60
+	tmux set -g @status-full-right-length 120
+	run_resize 150
+	[ "$(tmux show-option -gv status-left-length)" = "60" ]
+	[ "$(tmux show-option -gv status-right-length)" = "120" ]
+}
+
+@test "compact mode applies the configured lengths" {
+	tmux set -g @status-compact-left-length 20
+	tmux set -g @status-compact-right-length 40
+	run_resize 80
+	[ "$(tmux show-option -gv status-left-length)" = "20" ]
+	[ "$(tmux show-option -gv status-right-length)" = "40" ]
+}
+
+@test "lengths switch with the mode" {
+	tmux set -g @status-full-right-length 120
+	tmux set -g @status-compact-right-length 40
+	run_resize 150
+	[ "$(tmux show-option -gv status-right-length)" = "120" ]
+	run_resize 80
+	[ "$(tmux show-option -gv status-right-length)" = "40" ]
+}
+
+@test "no-op: lengths are left alone when not configured" {
+	local left right
+	left="$(tmux show-option -gv status-left-length)"
+	right="$(tmux show-option -gv status-right-length)"
+
+	run_resize 150
+	run_resize 80
+
+	[ "$(tmux show-option -gv status-left-length)" = "$left" ]
+	[ "$(tmux show-option -gv status-right-length)" = "$right" ]
+}
+
+@test "a length can be set without a format" {
+	tmux set -gu @status-full-right
+	tmux set -g @status-full-right-length 99
+	local right
+	right="$(tmux show-option -gv status-right)"
+
+	run_resize 150
+
+	[ "$(tmux show-option -gv status-right)" = "$right" ]
+	[ "$(tmux show-option -gv status-right-length)" = "99" ]
+}

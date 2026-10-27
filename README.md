@@ -6,7 +6,7 @@
 
 ## Features
 
-- Automatically detects terminal resize events using tmux's `client-resized` hook
+- Automatically detects terminal resize events using tmux's `client-resized` and `client-attached` hooks
 - Switches between compact and full status formats based on configurable width threshold
 - Fully customizable status formats for both compact and full modes
 - Zero configuration required - works out of the box with sensible defaults
@@ -80,6 +80,22 @@ set -g @status-full-right "%Y-%m-%d | %H:%M:%S"
 
 If not set, the plugin will not modify the status bar in full mode.
 
+### Status Length
+
+tmux truncates the status sections to `status-left-length` (default 10) and
+`status-right-length` (default 40) characters, so long formats get cut off.
+Set the length per mode and the plugin switches it along with the format.
+**These are optional** - only set the ones you need:
+
+```tmux
+set -g @status-full-left-length 60
+set -g @status-full-right-length 120
+set -g @status-compact-left-length 20
+set -g @status-compact-right-length 40
+```
+
+If not set, the plugin will not modify the length.
+
 ## Example Configurations
 
 ### Full Configuration (both modes)
@@ -137,13 +153,16 @@ See `man tmux` for more format variables.
 
 ## How It Works
 
-1. The plugin sets up a tmux `client-resized` hook
-2. When the terminal is resized, the hook triggers the status handler script
+1. The plugin sets up tmux `client-resized` and `client-attached` hooks (at hook
+   index 100, so reloading the config doesn't duplicate them and hooks from other
+   plugins are left alone; requires tmux 3.0+)
+2. When the terminal is resized or a client attaches, the hook triggers the status handler script
 3. The script checks the current client width using `#{client_width}`
 4. Based on the width and configured threshold:
    - If width < threshold and compact options are set, applies compact status
    - If width >= threshold and full options are set, applies full status
    - If options are not configured, leaves that part of the status bar unchanged
+   - Applies the matching `-length` options the same way
 5. The status bar updates immediately (only for configured options)
 
 ## License
