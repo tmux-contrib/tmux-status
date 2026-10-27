@@ -6,6 +6,25 @@ _tmux_status_source_dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck source=tmux_core.sh
 source "$_tmux_status_source_dir/tmux_core.sh"
 
+# Apply the formats and lengths configured for a mode (all optional)
+#
+# Arguments:
+#   $1 - mode name (compact or full)
+# Side effects:
+#   Updates status-left/right and status-left/right-length for options that are set
+_tmux_apply_mode() {
+	local mode="$1"
+	local side value
+
+	for side in left right; do
+		value=$(_tmux_get_option "@status-$mode-$side" "")
+		if [ -n "$value" ]; then _tmux_set_option "status-$side" "$value"; fi
+
+		value=$(_tmux_get_option "@status-$mode-$side-length" "")
+		if [ -n "$value" ]; then _tmux_set_option "status-$side-length" "$value"; fi
+	done
+}
+
 # Handle client resize event and update status bar accordingly
 #
 # Side effects:
@@ -25,29 +44,13 @@ _tmux_handle_resize() {
 	local width_threshold
 	width_threshold=$(_tmux_get_option "@status-width-threshold" "120")
 
-	# Get the compact status formats (optional)
-	local compact_left
-	compact_left=$(_tmux_get_option "@status-compact-left" "")
-
-	local compact_right
-	compact_right=$(_tmux_get_option "@status-compact-right" "")
-
-	# Get the full status formats (optional)
-	local full_left
-	full_left=$(_tmux_get_option "@status-full-left" "")
-
-	local full_right
-	full_right=$(_tmux_get_option "@status-full-right" "")
-
 	# Compare width against threshold and set status accordingly
 	if [ "$client_width" -lt "$width_threshold" ]; then
 		# Compact mode - narrow terminal
-		if [ -n "$compact_left" ]; then _tmux_set_option "status-left" "$compact_left"; fi
-		if [ -n "$compact_right" ]; then _tmux_set_option "status-right" "$compact_right"; fi
+		_tmux_apply_mode "compact"
 	else
 		# Full mode - wide terminal
-		if [ -n "$full_left" ]; then _tmux_set_option "status-left" "$full_left"; fi
-		if [ -n "$full_right" ]; then _tmux_set_option "status-right" "$full_right"; fi
+		_tmux_apply_mode "full"
 	fi
 }
 
