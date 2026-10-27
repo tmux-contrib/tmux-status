@@ -28,3 +28,26 @@ setup() {
 	[ "$status" -eq 0 ]
 	[ "$(tmux show-option -gv status-right)" = "$right" ]
 }
+
+@test "main.tmux registers the client-attached hook" {
+	run bash "$ROOT/main.tmux"
+	[ "$status" -eq 0 ]
+	run tmux show-hooks -g
+	[[ "$output" == *"client-attached[100]"* ]]
+	[[ "$output" == *"client-resized[100]"* ]]
+}
+
+@test "main.tmux is idempotent: reloading does not duplicate hooks" {
+	bash "$ROOT/main.tmux"
+	bash "$ROOT/main.tmux"
+	run bash -c "tmux show-hooks -g | grep -c 'tmux_status.sh handle-resize'"
+	[ "$output" = "2" ]
+}
+
+@test "main.tmux keeps hooks other plugins set at other indexes" {
+	tmux set-hook -g "client-resized[0]" "display-message other-plugin"
+	bash "$ROOT/main.tmux"
+	run tmux show-hooks -g
+	[[ "$output" == *"client-resized[0] display-message other-plugin"* ]]
+	[[ "$output" == *"tmux_status.sh handle-resize"* ]]
+}
